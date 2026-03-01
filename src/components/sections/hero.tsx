@@ -5,7 +5,7 @@ import { ChevronRight } from 'lucide-react';
 
 const Hero = () => {
   // Use the simplified filename
-  const videoPath = "/videos/banner.mp4"; 
+  const videoPath = "/videos/hero.mp4"; 
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
