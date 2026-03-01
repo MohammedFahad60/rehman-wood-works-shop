@@ -1,15 +1,15 @@
 import type { NextConfig } from "next";
-import path from "node:path";
 
-// Loader path from orchids-visual-edits - use direct resolve to get the actual file
-const loaderPath = require.resolve('orchids-visual-edits/loader.js');
-
+/**
+ * Corrected Next.js Configuration
+ * Removed outputFileTracingRoot to fix the Vercel pathing error.
+ */
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**',
+        hostname: '**', // Note: For production, it's safer to specify 'global-wood-works.odoo.com'
       },
       {
         protocol: 'http',
@@ -17,20 +17,24 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  outputFileTracingRoot: path.resolve(__dirname, '../../'),
+  // REMOVED: outputFileTracingRoot which was causing the lstat ENOENT error
+  
   typescript: {
+    // Keeping this true as per your preference to skip build-blocking errors
     ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
-  turbopack: {
-    rules: {
-      "*.{jsx,tsx}": {
-        loaders: [loaderPath]
-      }
-    }
-  }
-} as NextConfig;
+  // Ensure that the 'orchids-visual-edits' package is listed in your package.json
+  // otherwise, the build will fail when trying to resolve the loaderPath.
+  experimental: {
+    turbo: {
+      rules: {
+        "*.{jsx,tsx}": ["orchids-visual-edits/loader.js"],
+      },
+    },
+  },
+};
 
 export default nextConfig;
