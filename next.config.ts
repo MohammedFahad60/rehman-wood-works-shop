@@ -2,14 +2,14 @@ import type { NextConfig } from "next";
 
 /**
  * Corrected Next.js Configuration
- * Removed outputFileTracingRoot to fix the Vercel pathing error.
+ * Includes Video Headers and fixes for Vercel deployment.
  */
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: '**', // Note: For production, it's safer to specify 'global-wood-works.odoo.com'
+        hostname: '**', 
       },
       {
         protocol: 'http',
@@ -17,17 +17,33 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  // REMOVED: outputFileTracingRoot which was causing the lstat ENOENT error
   
+  // Headers to ensure Vercel serves .mp4 files correctly
+  async headers() {
+    return [
+      {
+        // This applies to all files in your public/videos folder
+        source: "/videos/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+          {
+            key: "Content-Type",
+            value: "video/mp4",
+          },
+        ],
+      },
+    ];
+  },
+
   typescript: {
-    // Keeping this true as per your preference to skip build-blocking errors
     ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Ensure that the 'orchids-visual-edits' package is listed in your package.json
-  // otherwise, the build will fail when trying to resolve the loaderPath.
   experimental: {
     turbo: {
       rules: {
